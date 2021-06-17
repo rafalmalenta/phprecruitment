@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  php-task:
+    build: "."
+    ports:
+    - 5555:8000
