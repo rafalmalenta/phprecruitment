@@ -5,3 +5,8 @@ services:
     build: "."
     ports:
     - 5555:8000
+    volumes:
+    - ./src:/task/src
+    - ./config:/task/config
+    - ./public:/task/public
+    - ./vendor:/task/vendor
