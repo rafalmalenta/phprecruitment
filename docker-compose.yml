@@ -2,11 +2,17 @@ version: "3"
 
 services:
   php-task:
-    build: "."
+    container_name: phptask
+    build: "./"
     ports:
     - 5555:8000
     volumes:
-    - ./src:/task/src
-    - ./config:/task/config
-    - ./public:/task/public
-    - ./vendor:/task/vendor
+    - ./:/task/
+    depends_on:
+      - db
+  db:
+    command: --default-authentication-plugin=mysql_native_password
+    build: "./db"
+    ports:
+      - 3306:3306
+    container_name: db
