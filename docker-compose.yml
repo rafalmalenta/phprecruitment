@@ -11,6 +11,7 @@ services:
     - ./config:/task/config
     - ./public:/task/public
     - ./vendor:/task/vendor
+    - ./DataFixtures:/task/DataFixtures
     - ./:/task/
     depends_on:
       - db
