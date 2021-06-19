@@ -4,7 +4,10 @@ namespace App\Repository;
 
 use App\Entity\BlogPost;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use function Symfony\Component\String\b;
 
 /**
  * @method BlogPost|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,22 +22,33 @@ class BlogPostRepository extends ServiceEntityRepository
         parent::__construct($registry, BlogPost::class);
     }
 
-    // /**
-    //  * @return BlogPost[] Returns an array of BlogPost objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return BlogPost[] Returns an array of BlogPost objects
+      */
+    public function findAllPaginated($page, $limit): array
     {
         return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
             ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
+            ->setMaxResults($limit)
+            ->setFirstResult(($page-1) * $limit)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
+    /**
+     * @return int Returns an array of BlogPost objects
+     */
+    public function postsCount(): int
+    {
+        try {
+            return $this->createQueryBuilder('b')
+                ->select('COUNT(b) as sum')
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException | NonUniqueResultException $e)
+        {
+
+        }
+    }
 
     /*
     public function findOneBySomeField($value): ?BlogPost

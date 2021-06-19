@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BlogPost;
+use App\Repository\BlogPostRepository;
 use App\Services\RequestValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,11 +16,25 @@ class PostsController extends AbstractController
 {
 
     #[Route('/posts', name: 'getPosts', methods: 'GET')]
-    public function getPosts(): Response
+    public function getPosts(Request $request): Response
     {
+        /**
+         * @var $postRepo BlogPostRepository
+         */
+        $page = (int)$request->query->get("page") ?? 1;
+        $limit = (int)$request->query->get("limit") ?? 22;
         $em = $this->getDoctrine()->getManager();
-        $posts = $em->getRepository(BlogPost::class)->findAll();
-        return $this->json($posts, 200);
+        $postRepo = $em->getRepository(BlogPost::class);
+        $posts = $postRepo->findAllPaginated($page,$limit);
+        $maxPages = ceil($postRepo->postsCount()/$limit);
+
+        return $this->json(
+        [
+                "meta"=>["page"=>$page,"limit"=>$limit,"pages"=>$maxPages],
+                "posts"=>$posts,
+        ]
+
+            , 200);
     }
     #[Route('/posts/{id}', name: 'getPost', methods: 'GET')]
     public function getPost(BlogPost $blogPost): Response
@@ -72,7 +87,7 @@ class PostsController extends AbstractController
     }
     #[Route('/posts/{id}', name: 'editPostPartially', methods: 'PATCH')]
     #[IsGranted("ROLE_ADMIN")]
-    public function editPostPartially(BlogPost $blogPost,Request $request): Response
+    public function editPostPartially(BlogPost $blogPost, Request $request): Response
     {
         $requestValidator = new RequestValidator($request);
         $requestValidator->init(["fullContent","shortContent"]);
