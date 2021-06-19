@@ -13,6 +13,7 @@ class ApiAuthAuthenticator extends AbstractAuthenticator
 {
     public function supports(Request $request): ?bool
     {
+        return false;
         // TODO: Implement supports() method.
     }
 
