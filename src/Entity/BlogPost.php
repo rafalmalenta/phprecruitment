@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\BlogPostRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)

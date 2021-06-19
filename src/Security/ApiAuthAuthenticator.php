@@ -2,34 +2,56 @@
 
 namespace App\Security;
 
+use Ahc\Jwt\JWT;
+use App\Entity\User;
+use App\Services\JWTService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
 class ApiAuthAuthenticator extends AbstractAuthenticator
 {
+    private JWTService $JWTService;
+
+    public function __construct(JWTService $JWTService)
+    {
+        $this->JWTService = $JWTService;
+    }
+
     public function supports(Request $request): ?bool
     {
-        return false;
-        // TODO: Implement supports() method.
+        return $request->headers->has('Authorization')
+            && str_starts_with($request->headers->get('Authorization'), 'Bearer ');
     }
 
     public function authenticate(Request $request): PassportInterface
     {
-        // TODO: Implement authenticate() method.
+        $authorizationHeader = $request->headers->get('Authorization');
+        $token = substr($authorizationHeader, 7);
+        if($this->JWTService->verifyToken($token)){
+            $username = $this->JWTService->getToken($token);
+            return new SelfValidatingPassport(new UserBadge($username));
+        }
+        throw new CustomUserMessageAuthenticationException("Invalid Token");
+
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // TODO: Implement onAuthenticationSuccess() method.
+        return null;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        // TODO: Implement onAuthenticationFailure() method.
+        return new JsonResponse(["exception"=>$exception->getMessageKey()]);
     }
 
 //    public function start(Request $request, AuthenticationException $authException = null): Response
