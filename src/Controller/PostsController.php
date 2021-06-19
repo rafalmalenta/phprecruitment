@@ -47,7 +47,7 @@ class PostsController extends AbstractController
         }
         return $this->json([
             'error' => 'Something is missing'
-        ]);
+        ])->setStatusCode(401);
     }
     #[Route('/posts/{id}', name: 'editPostFully', methods: 'PUT')]
     #[IsGranted("ROLE_ADMIN")]
@@ -68,7 +68,7 @@ class PostsController extends AbstractController
         }
         return $this->json([
             'error' => 'Something is missing'
-        ]);
+        ])->setStatusCode(401);
     }
     #[Route('/posts/{id}', name: 'editPostPartially', methods: 'PATCH')]
     #[IsGranted("ROLE_ADMIN")]
@@ -91,6 +91,6 @@ class PostsController extends AbstractController
         }
         return $this->json([
             'error' => 'Something is missing'
-        ]);
+        ])->setStatusCode(401);
     }
 }

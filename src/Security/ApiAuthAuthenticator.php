@@ -51,7 +51,7 @@ class ApiAuthAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new JsonResponse(["exception"=>$exception->getMessageKey()]);
+        return new JsonResponse(["exception"=>$exception->getMessageKey()],401);
     }
 
 //    public function start(Request $request, AuthenticationException $authException = null): Response
