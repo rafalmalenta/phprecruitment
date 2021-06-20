@@ -10,32 +10,36 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 
 class PostsController extends AbstractController
 {
-
     #[Route('/posts', name: 'getPosts', methods: 'GET')]
-    public function getPosts(Request $request): Response
+    public function getPosts(Request $request, SerializerInterface $serializer): Response
     {
         /**
          * @var $postRepo BlogPostRepository
          */
-        $page = (int)$request->query->get("page") ?? 1;
-        $limit = (int)$request->query->get("limit") ?? 22;
+        $page = $request->query->get("page") ?? 1;
+        $limit = $request->query->get("limit") ?? 22;
         $em = $this->getDoctrine()->getManager();
         $postRepo = $em->getRepository(BlogPost::class);
         $posts = $postRepo->findAllPaginated($page,$limit);
+
         $maxPages = ceil($postRepo->postsCount()/$limit);
 
         return $this->json(
-        [
-                "meta"=>["page"=>$page,"limit"=>$limit,"pages"=>$maxPages],
-                "posts"=>$posts,
-        ]
-
-            , 200);
+            [
+                "meta"=>["page"=>$page, "limit"=>$limit, "pages"=>$maxPages],
+                "posts"=>$posts
+            ],
+            200,
+            [],
+                ['groups'=> ["main"]],
+            );
     }
+
     #[Route('/posts/{id}', name: 'getPost', methods: 'GET')]
     public function getPost(BlogPost $blogPost): Response
     {
@@ -64,6 +68,7 @@ class PostsController extends AbstractController
             'error' => 'Something is missing'
         ])->setStatusCode(401);
     }
+
     #[Route('/posts/{id}', name: 'editPostFully', methods: 'PUT')]
     #[IsGranted("ROLE_ADMIN")]
     public function editPostFully(BlogPost $blogPost, Request $request): Response
@@ -79,12 +84,13 @@ class PostsController extends AbstractController
             $em->flush();
             return $this->json([
                 'message' => 'Post edited'
-            ]);
+            ], 200);
         }
         return $this->json([
             'error' => 'Something is missing'
         ])->setStatusCode(401);
     }
+
     #[Route('/posts/{id}', name: 'editPostPartially', methods: 'PATCH')]
     #[IsGranted("ROLE_ADMIN")]
     public function editPostPartially(BlogPost $blogPost, Request $request): Response

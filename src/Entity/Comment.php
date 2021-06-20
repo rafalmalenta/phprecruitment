@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -15,23 +15,29 @@ class Comment
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="text")
      */
-    private $content;
+    private string $content;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private User $user;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $publishedAt;
+    private \DateTime $publishedAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=BlogPost::class, inversedBy="comments")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $post;
 
     public function getId(): ?int
     {
@@ -55,7 +61,7 @@ class Comment
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
@@ -70,6 +76,18 @@ class Comment
     public function setPublishedAt(?\DateTimeInterface $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    public function getPost(): ?BlogPost
+    {
+        return $this->post;
+    }
+
+    public function setPost(?BlogPost $post): self
+    {
+        $this->post = $post;
 
         return $this;
     }

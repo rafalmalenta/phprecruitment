@@ -8,5 +8,11 @@
         </set>
       </option>
     </inspection_tool>
+    <inspection_tool class="PhpStrictTypeCheckingInspection" enabled="true" level="ERROR" enabled_by_default="true">
+      <scope name="Project Files" level="ERROR" enabled="true">
+        <option name="ENABLE_WITHOUT_DECLARE_STRICT_DIRECTIVE" value="true" />
+      </scope>
+      <option name="ENABLE_WITHOUT_DECLARE_STRICT_DIRECTIVE" value="true" />
+    </inspection_tool>
   </profile>
 </component>

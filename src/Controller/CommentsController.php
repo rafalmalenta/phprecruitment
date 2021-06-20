@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommentsController extends AbstractController
 {
-    #[Route('/comments', name: 'comments')]
+    #[Route('/comments', name: 'comments',methods: 'GET')]
     public function index(): Response
     {
         return $this->json([
