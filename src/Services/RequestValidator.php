@@ -1,11 +1,7 @@
 <?php
 
-
 namespace App\Services;
 
-
-use phpDocumentor\Reflection\Types\Void_;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class RequestValidator
@@ -15,6 +11,8 @@ class RequestValidator
     private array $validValues;
 
     private array $bodyPattern;
+
+    private array $whatsInRequestIsTooMuch;
 
     public function __construct(Request $request)
     {
@@ -34,15 +32,20 @@ class RequestValidator
                     unset($requestContent["$value"]);
                 }
             }
+        $this->whatsInRequestIsTooMuch = $requestContent;
     }
     public function allValuesPassed(): ?array
     {
+        if(count($this->whatsInRequestIsTooMuch)>0)
+            return null;
         if(count($this->bodyPattern)===count($this->validValues))
             return $this->validValues;
         return null;
     }
     public function atLeastOneValuesPassed(): ?array
     {
+        if(count($this->whatsInRequestIsTooMuch)>0)
+            return null;
         if(count($this->validValues)>0)
             return $this->validValues;
         return null;
