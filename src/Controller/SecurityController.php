@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Services\JWTService;
+use App\Services\RequestValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,13 +20,10 @@ class SecurityController extends AbstractController
         /**
          * @var $user User
          */
-        if(!$request->getContent())
-            return $this->json([
-                'error' => 'no empty bodies',
-            ])->setStatusCode(401);
-        $body = json_decode($request->getContent(), true);
-
-        if(key_exists('username',$body) and key_exists('password',$body)) {
+        $requestValidator = new RequestValidator($request);
+        $requestValidator->init(["username","password"]);
+        if($requestValidator->allValuesPassed()){
+            $body = $requestValidator->allValuesPassed();
             $username = $body['username'];
             $password = $body['password'];
             $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);

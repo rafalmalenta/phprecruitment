@@ -4,6 +4,8 @@
 namespace App\Services;
 
 
+use phpDocumentor\Reflection\Types\Void_;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class RequestValidator
@@ -18,16 +20,20 @@ class RequestValidator
     {
         $this->request = $request;
     }
-    public function init(array $bodyPattern)
+    public function init(array $bodyPattern):void
     {
         $this->bodyPattern = $bodyPattern;
         $requestContent = json_decode($this->request->getContent(), true);
-        foreach ($bodyPattern as $value){
-            if(key_exists($value,$requestContent)) {
-                $this->validValues["$value"] = $requestContent["$value"];
-                unset($requestContent["$value"]);
-            }
+        if(!$requestContent){
+            $this->validValues = [];
         }
+        else
+            foreach ($bodyPattern as $value){
+                if(key_exists($value,$requestContent)) {
+                    $this->validValues["$value"] = $requestContent["$value"];
+                    unset($requestContent["$value"]);
+                }
+            }
     }
     public function allValuesPassed(): ?array
     {
