@@ -17,26 +17,27 @@ class BlogPost
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("main")
+     * @Groups({"main","post_info","comment_info"})
      */
     private int $id;
 
     /**
-     * @Groups({"main"})
+     * @Groups({"main","post_info"})
      * @ORM\Column(type="text")
      */
     private string $fullContent;
 
     /**
-     * @Groups("main")
+     * @Groups({"main","post_info"})
      * @ORM\Column(type="text")
      */
     private string $shortContent;
 
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="post", orphanRemoval=true)
+     * @Groups({"main","post_info"})
     */
-    private $comments;
+    private Collection $comments;
 
     public function __construct()
     {
@@ -70,6 +71,15 @@ class BlogPost
         $this->shortContent = $shortContent;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     * @Groups("main")
+     */
+    public function getCommentsCount(): int
+    {
+        return count($this->comments);
     }
 
     /**

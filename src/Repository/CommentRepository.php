@@ -18,7 +18,32 @@ class CommentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Comment::class);
     }
-
+    /**
+    * @return Comment[] Returns an array of BlogPost objects
+    */
+    public function findAllPaginated($page, $limit): array
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.id', 'ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult(($page-1) * $limit)
+            ->getQuery()
+            ->getResult();
+    }
+    /**
+     * @return Comment[] Returns an array of BlogPost objects
+     */
+    public function findAllPaginatedWithOwnerId($id,$page, $limit): array
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.id', 'ASC')
+            ->andWhere('c.post = :param')
+            ->setParameter('param', $id)
+            ->setMaxResults($limit)
+            ->setFirstResult(($page-1) * $limit)
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return Comment[] Returns an array of Comment objects
     //  */

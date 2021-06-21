@@ -10,13 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 
 class PostsController extends AbstractController
 {
     #[Route('/posts', name: 'getPosts', methods: 'GET')]
-    public function getPosts(Request $request, SerializerInterface $serializer): Response
+    public function getPosts(Request $request): Response
     {
         /**
          * @var $postRepo BlogPostRepository
@@ -26,7 +24,6 @@ class PostsController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $postRepo = $em->getRepository(BlogPost::class);
         $posts = $postRepo->findAllPaginated($page,$limit);
-
         $maxPages = ceil($postRepo->postsCount()/$limit);
 
         return $this->json(
@@ -36,14 +33,14 @@ class PostsController extends AbstractController
             ],
             200,
             [],
-                ['groups'=> ["main"]],
+                ['groups'=> ["post_info"]],
             );
     }
 
     #[Route('/posts/{id}', name: 'getPost', methods: 'GET')]
     public function getPost(BlogPost $blogPost): Response
     {
-        return $this->json($blogPost, 200);
+        return $this->json($blogPost, 200,[],['groups'=>["post_info"]]);
     }
 
     #[Route('/posts', name: 'addPost', methods: 'POST')]
@@ -99,10 +96,10 @@ class PostsController extends AbstractController
         $requestValidator->init(["fullContent","shortContent"]);
         if($requestValidator->atLeastOneValuesPassed()){
             $values = $requestValidator->atLeastOneValuesPassed();
-            if(key_exists("fullContent",$values))
+            if(key_exists("fullContent", $values))
                 $blogPost->setFullContent($values["fullContent"]);
-             if(key_exists("shortContent",$values))
-                 $blogPost->setShortContent($values["shortContent"]);
+            if(key_exists("shortContent", $values))
+                $blogPost->setShortContent($values["shortContent"]);
             $em = $this->getDoctrine()->getManager();
             $em->persist($blogPost);
             $em->flush();

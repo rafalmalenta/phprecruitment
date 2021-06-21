@@ -34,6 +34,7 @@ class ApiAuthAuthenticator extends AbstractAuthenticator
 
     public function authenticate(Request $request): PassportInterface
     {
+
         $authorizationHeader = $request->headers->get('Authorization');
         $token = substr($authorizationHeader, 7);
         if($this->JWTService->verifyToken($token)){
@@ -41,7 +42,6 @@ class ApiAuthAuthenticator extends AbstractAuthenticator
             return new SelfValidatingPassport(new UserBadge($username));
         }
         throw new CustomUserMessageAuthenticationException("Invalid Token");
-
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
