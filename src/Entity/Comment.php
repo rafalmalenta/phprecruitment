@@ -36,7 +36,7 @@ class Comment
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups({"main","comment_info"})
      */
-    private \DateTime $publishedAt;
+    private ?\DateTime $publishedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=BlogPost::class, inversedBy="comments")

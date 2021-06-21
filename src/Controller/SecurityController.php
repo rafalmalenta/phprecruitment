@@ -19,16 +19,22 @@ class SecurityController extends AbstractController
         /**
          * @var $user User
          */
-        $body = json_decode($request->getContent(), true);
-        $username = $body['username'];
-        $password = $body['password'];
-
-        $user = $entityManager->getRepository(User::class)->findOneBy(['username'=>$username]);
-        if($user and $passwordEncoder->isPasswordValid($user,$password)){
-            $token = $JWTservice->generateToken($user->getUsername());
+        if(!$request->getContent())
             return $this->json([
-                'token' => $token,
-            ]);
+                'error' => 'no empty bodies',
+            ])->setStatusCode(401);
+        $body = json_decode($request->getContent(), true);
+
+        if(key_exists('username',$body) and key_exists('password',$body)) {
+            $username = $body['username'];
+            $password = $body['password'];
+            $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
+            if ($user and $passwordEncoder->isPasswordValid($user, $password)) {
+                $token = $JWTservice->generateToken($user->getUsername());
+                return $this->json([
+                    'token' => $token,
+                ]);
+            }
         }
         return $this->json([
             'error' => 'invalid credentials',

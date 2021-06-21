@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\BlogPost;
 use App\Entity\Comment;
+use App\Services\RequestValidator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,16 +36,12 @@ class CommentsController extends AbstractController
             ]
         );
     }
-    #[Route('/comments/{id}', name: 'allComments',methods: 'GET')]
-    public function comment(Comment $comment, Request $request): Response
+    #[Route('/comments/{id}', name: 'comment',methods: 'GET')]
+    public function comment(Comment $comment): Response
     {
-//        $page = $request->query->get("page") ?? 1;
-//        $limit = $request->query->get("limit") ?? 22;
-//        $comments = $this->getDoctrine()->getRepository(Comment::class)->findAllPaginated($page, $limit);
         $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
             return $innerObject instanceof \DateTime ? $innerObject->format('Y-m-d H:i') : '';
         };
-
         return $this->json(
             ['comments' => $comment],
             200,
@@ -55,8 +54,8 @@ class CommentsController extends AbstractController
             ]
         );
     }
-    #[Route('/posts/{id}/comments', name: 'postComments',methods: 'GET')]
-    public function postComments(int $id, Request $request): Response
+    #[Route('/posts/{id}/comments', name: 'getPostComments',methods: 'GET')]
+    public function getPostComments(int $id, Request $request): Response
     {
         $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
             return $innerObject instanceof \DateTime ? $innerObject->format('Y-m-d H:i') : '';
@@ -75,6 +74,33 @@ class CommentsController extends AbstractController
                     'publishedAt' => $dateCallback,
                 ],
                 'groups'=> ["comment_info"]]
+        );
+    }
+    #[Route('/comments', name: 'createComment',methods: 'POST')]
+    #[IsGranted("ROLE_USER")]
+    public function createComment(Request $request): Response
+    {
+        $requestValidator = new RequestValidator($request);
+        $requestValidator->init(["postId","comment"]);
+        if($requestValidator->allValuesPassed()){
+            $values = $requestValidator->allValuesPassed();
+            $comment= new Comment();
+            $postId = $values["postId"];
+            $post = $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['id'=>"$postId"]);
+            $comment->setPost($post)
+                ->setContent($values["comment"])
+                ->setUser($this->getUser());
+            $em= $this->getDoctrine()->getManager();
+            $em->persist($comment);
+            $em->flush();
+            return $this->json(
+                ['message'=>"success"],
+                200,
+            );
+        }
+        return $this->json(
+            ['message'=>"something went wrong"],
+            403,
         );
     }
 }
