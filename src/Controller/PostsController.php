@@ -6,7 +6,6 @@ use App\Entity\BlogPost;
 use App\Repository\BlogPostRepository;
 use App\Services\PostsDirector;
 use App\Services\RequestValidator;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

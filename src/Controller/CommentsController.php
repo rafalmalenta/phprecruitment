@@ -87,9 +87,14 @@ class CommentsController extends AbstractController
         $requestValidator->init(["postId","comment"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->allValuesPassed();
-            $comment= new Comment();
             $postId = $values["postId"];
             $post = $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['id'=>"$postId"]);
+            if (!$post)
+                return $this->json(
+                    ['message'=>"something went wrong"],
+                    403,
+                );
+            $comment= new Comment();
             $comment->setPost($post)
                 ->setContent($values["comment"])
                 ->setUser($this->getUser());
