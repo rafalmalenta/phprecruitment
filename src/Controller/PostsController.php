@@ -80,9 +80,9 @@ class PostsController extends AbstractController
         ])->setStatusCode(401);
     }
 
-    #[Route('/posts/{id}', name: 'editPostFully', methods: 'PUT')]
+    #[Route('/posts/{id}', name: 'editPostCompletely', methods: 'PUT')]
     #[IsGranted("ROLE_ADMIN")]
-    public function editPostFully(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
+    public function editPostCompletely(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
     {
         $requestValidator = new RequestValidator($request);
         $requestValidator->setRequestPattern(["fullContent","shortContent"]);
