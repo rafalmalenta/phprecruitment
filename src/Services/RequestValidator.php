@@ -18,7 +18,7 @@ class RequestValidator
     {
         $this->request = $request;
     }
-    public function init(array $bodyPattern):void
+    public function setRequestPattern(array $bodyPattern):void
     {
         $this->bodyPattern = $bodyPattern;
         $requestContent = json_decode($this->request->getContent(), true);
@@ -34,20 +34,24 @@ class RequestValidator
             }
         $this->whatsInRequestIsTooMuch = $requestContent;
     }
-    public function allValuesPassed(): ?array
+    public function allValuesPassed(): bool
     {
         if(count($this->whatsInRequestIsTooMuch)>0)
-            return null;
+            return false;
         if(count($this->bodyPattern)===count($this->validValues))
-            return $this->validValues;
-        return null;
+            return true;
+        return false;
     }
-    public function atLeastOneValuesPassed(): ?array
+    public function atLeastOneValuesPassed(): bool
     {
         if(count($this->whatsInRequestIsTooMuch)>0)
-            return null;
+            return false;
         if(count($this->validValues)>0)
-            return $this->validValues;
-        return null;
+            return true;
+        return false;
+    }
+    public function getValidValues(): array
+    {
+        return $this->validValues;
     }
 }

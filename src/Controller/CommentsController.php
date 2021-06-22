@@ -84,9 +84,9 @@ class CommentsController extends AbstractController
     public function createComment(Request $request): Response
     {
         $requestValidator = new RequestValidator($request);
-        $requestValidator->init(["postId","comment"]);
+        $requestValidator->setRequestPattern(["postId","comment"]);
         if($requestValidator->allValuesPassed()){
-            $values = $requestValidator->allValuesPassed();
+            $values = $requestValidator->getValidValues();
             $postId = $values["postId"];
             $post = $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['id'=>"$postId"]);
             if (!$post)
@@ -116,9 +116,9 @@ class CommentsController extends AbstractController
     public function publishComment(Comment $comment, Request $request): Response
     {
         $requestValidator = new RequestValidator($request);
-        $requestValidator->init(["publish"]);
+        $requestValidator->setRequestPattern(["publish"]);
         if($requestValidator->allValuesPassed()){
-            $values = $requestValidator->allValuesPassed();
+            $values = $requestValidator->getValidValues();
             if($values["publish"] == true){
                 $comment->setPublishedAt(new \DateTime());
                 $em= $this->getDoctrine()->getManager();

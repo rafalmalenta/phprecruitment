@@ -50,9 +50,9 @@ class PostsController extends AbstractController
     public function addPost(Request $request, EntityManagerInterface $em): Response
     {
         $requestValidator = new RequestValidator($request);
-        $requestValidator->init(["fullContent","shortContent"]);
+        $requestValidator->setRequestPattern(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
-            $values = $requestValidator->allValuesPassed();
+            $values = $requestValidator->getValidValues();
             $director = new PostsDirector(new BlogPost(),$em);
             $director->setValuesFromArray($values);
             return $this->json([
@@ -69,9 +69,9 @@ class PostsController extends AbstractController
     public function editPostFully(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
     {
         $requestValidator = new RequestValidator($request);
-        $requestValidator->init(["fullContent","shortContent"]);
+        $requestValidator->setRequestPattern(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
-            $values = $requestValidator->allValuesPassed();
+            $values = $requestValidator->getValidValues();
             $director = new PostsDirector($blogPost, $em);
             $director->setValuesFromArray($values);
             return $this->json([
@@ -88,9 +88,9 @@ class PostsController extends AbstractController
     public function editPostPartially(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
     {
         $requestValidator = new RequestValidator($request);
-        $requestValidator->init(["fullContent","shortContent"]);
+        $requestValidator->setRequestPattern(["fullContent","shortContent"]);
         if($requestValidator->atLeastOneValuesPassed()){
-            $values = $requestValidator->atLeastOneValuesPassed();
+            $values = $requestValidator->getValidValues();
             $director = new PostsDirector($blogPost, $em);
             $director->setValuesFromArray($values);
             return $this->json([
