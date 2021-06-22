@@ -21,9 +21,9 @@ class SecurityController extends AbstractController
          * @var $user User
          */
         $requestValidator = new RequestValidator($request);
-        $requestValidator->init(["username","password"]);
+        $requestValidator->setRequestPattern(["username","password"]);
         if($requestValidator->allValuesPassed()){
-            $body = $requestValidator->allValuesPassed();
+            $body = $requestValidator->getValidValues();
             $username = $body['username'];
             $password = $body['password'];
             $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);

@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class PostsController extends AbstractController
 {
@@ -27,7 +28,9 @@ class PostsController extends AbstractController
         $postRepo = $em->getRepository(BlogPost::class);
         $posts = $postRepo->findAllPaginated($page,$limit);
         $maxPages = ceil($postRepo->postsCount()/$limit);
-
+        $commentsCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []){
+            return count($innerObject) > 0 ? "/posts/".$outerObject->getId()."/comments" : "";
+        };
         return $this->json(
             [
                 "meta"=>["page"=>$page, "limit"=>$limit, "pages"=>$maxPages],
@@ -35,14 +38,27 @@ class PostsController extends AbstractController
             ],
             200,
             [],
-                ['groups'=> ["post_info"]],
+                [
+                    AbstractNormalizer::CALLBACKS => [
+                        'comments' => $commentsCallback,
+                    ],
+                    'groups'=> ["post_info"]],
             );
     }
 
     #[Route('/posts/{id}', name: 'getPost', methods: 'GET')]
     public function getPost(BlogPost $blogPost): Response
     {
-        return $this->json($blogPost, 200,[],['groups'=>["post_info"]]);
+        $commentsCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []){
+            return count($innerObject) > 0 ? "/posts/".$outerObject->getId()."/comments" : "";
+        };
+        return $this->json($blogPost, 200,[],
+            [
+                AbstractNormalizer::CALLBACKS => [
+                    'comments' => $commentsCallback,
+                ],
+                'groups'=>["post_info"]
+            ]);
     }
 
     #[Route('/posts', name: 'addPost', methods: 'POST')]

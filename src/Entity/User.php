@@ -26,6 +26,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"comment_info"})
      */
     private string $username;
 

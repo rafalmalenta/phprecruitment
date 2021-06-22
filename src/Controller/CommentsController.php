@@ -21,8 +21,10 @@ class CommentsController extends AbstractController
         $limit = $request->query->get("limit") ?? 22;
         $comments = $this->getDoctrine()->getRepository(Comment::class)->findAllPaginated($page, $limit);
         $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
+//            dump("inner",$innerObject,"outer",$outerObject,"atrib", $attributeName,"format", $format ,"context", $context );
             return $innerObject instanceof \DateTime ? $innerObject->format('Y-m-d H:i') : '';
         };
+
 
         return $this->json(
             ['comments' => $comments],
