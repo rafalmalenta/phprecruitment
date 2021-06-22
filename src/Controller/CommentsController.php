@@ -34,8 +34,6 @@ class CommentsController extends AbstractController
         $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
             return $innerObject instanceof \DateTime ? $innerObject->format('Y-m-d H:i') : '';
         };
-
-
         return $this->json(
             [
                 "meta"=>["page"=>$page, "limit"=>$limit, "total_pages"=>$maxPages],
