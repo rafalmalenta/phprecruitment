@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Entity\BlogPost;
 use App\Repository\BlogPostRepository;
+use App\Services\PostsDirector;
 use App\Services\RequestValidator;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,18 +48,14 @@ class PostsController extends AbstractController
 
     #[Route('/posts', name: 'addPost', methods: 'POST')]
     #[IsGranted("ROLE_ADMIN")]
-    public function addPost(Request $request): Response
+    public function addPost(Request $request, EntityManagerInterface $em): Response
     {
         $requestValidator = new RequestValidator($request);
         $requestValidator->init(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->allValuesPassed();
-            $post = new BlogPost();
-            $post->setFullContent($values["fullContent"])
-                ->setShortContent($values["shortContent"]);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($post);
-            $em->flush();
+            $director = new PostsDirector(new BlogPost(),$em);
+            $director->setValuesFromArray($values);
             return $this->json([
                 'message' => 'Post added'
             ]);
@@ -68,17 +67,14 @@ class PostsController extends AbstractController
 
     #[Route('/posts/{id}', name: 'editPostFully', methods: 'PUT')]
     #[IsGranted("ROLE_ADMIN")]
-    public function editPostFully(BlogPost $blogPost, Request $request): Response
+    public function editPostFully(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
     {
         $requestValidator = new RequestValidator($request);
         $requestValidator->init(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->allValuesPassed();
-            $blogPost->setFullContent($values["fullContent"])
-                ->setShortContent($values["shortContent"]);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($blogPost);
-            $em->flush();
+            $director = new PostsDirector($blogPost, $em);
+            $director->setValuesFromArray($values);
             return $this->json([
                 'message' => 'Post edited'
             ], 200);
@@ -90,19 +86,14 @@ class PostsController extends AbstractController
 
     #[Route('/posts/{id}', name: 'editPostPartially', methods: 'PATCH')]
     #[IsGranted("ROLE_ADMIN")]
-    public function editPostPartially(BlogPost $blogPost, Request $request): Response
+    public function editPostPartially(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
     {
         $requestValidator = new RequestValidator($request);
         $requestValidator->init(["fullContent","shortContent"]);
         if($requestValidator->atLeastOneValuesPassed()){
             $values = $requestValidator->atLeastOneValuesPassed();
-            if(key_exists("fullContent", $values))
-                $blogPost->setFullContent($values["fullContent"]);
-            if(key_exists("shortContent", $values))
-                $blogPost->setShortContent($values["shortContent"]);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($blogPost);
-            $em->flush();
+            $director = new PostsDirector($blogPost, $em);
+            $director->setValuesFromArray($values);
             return $this->json([
                 'message' => 'Post edited'
             ]);

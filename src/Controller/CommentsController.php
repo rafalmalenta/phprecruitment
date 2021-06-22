@@ -64,12 +64,7 @@ class CommentsController extends AbstractController
         $limit = $request->query->get("limit") ?? 22;
         $comments = $this->getDoctrine()->getRepository(Comment::class)->findAllPaginatedWithOwnerId($id,$page, $limit);
         if(!$comments){
-            return $this->json(
-                [
-                    'error' => "resource don't exist",
-                ],
-                404,
-               );
+            return $this->json(['error' => "resource don't exist"],404);
         }
         return $this->json(
             [
@@ -126,7 +121,7 @@ class CommentsController extends AbstractController
                 $em->flush();
                 return $this->json(
                     ['message'=>"successfully published"],
-                    202);
+                    200);
             }
         }
         return $this->json(
@@ -143,6 +138,6 @@ class CommentsController extends AbstractController
         $em->flush();
         return $this->json(
             ['message'=>"successfully deleted"],
-            202);
+            200);
     }
 }
