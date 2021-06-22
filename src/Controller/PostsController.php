@@ -9,6 +9,7 @@ use App\Services\RequestValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,6 +17,9 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class PostsController extends AbstractController
 {
+    /**
+     * @return JsonResponse
+     */
     #[Route('/posts', name: 'getPosts', methods: 'GET')]
     public function getPosts(Request $request): Response
     {
@@ -45,7 +49,9 @@ class PostsController extends AbstractController
                     'groups'=> ["post_info"]],
             );
     }
-
+    /**
+     * @return JsonResponse
+     */
     #[Route('/posts/{id}', name: 'getPost', methods: 'GET')]
     public function getPost(BlogPost $blogPost): Response
     {
@@ -60,7 +66,9 @@ class PostsController extends AbstractController
                 'groups'=>["post_info"]
             ]);
     }
-
+    /**
+     * @return JsonResponse
+     */
     #[Route('/posts', name: 'addPost', methods: 'POST')]
     #[IsGranted("ROLE_ADMIN")]
     public function addPost(Request $request, EntityManagerInterface $em): Response
@@ -79,7 +87,9 @@ class PostsController extends AbstractController
             'error' => 'Something is missing'
         ])->setStatusCode(401);
     }
-
+    /**
+     * @return JsonResponse
+     */
     #[Route('/posts/{id}', name: 'editPostCompletely', methods: 'PUT')]
     #[IsGranted("ROLE_ADMIN")]
     public function editPostCompletely(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
@@ -98,7 +108,9 @@ class PostsController extends AbstractController
             'error' => 'Something is missing'
         ])->setStatusCode(401);
     }
-
+    /**
+     * @return JsonResponse
+     */
     #[Route('/posts/{id}', name: 'editPostPartially', methods: 'PATCH')]
     #[IsGranted("ROLE_ADMIN")]
     public function editPostPartially(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response

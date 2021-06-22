@@ -9,6 +9,7 @@ use App\Services\RequestValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +18,9 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 class CommentsController extends AbstractController
 {
     #[Route('/comments', name: 'allComments', methods: 'GET')]
+    /**
+     * @return JsonResponse
+     */
     public function allComments(Request $request, EntityManagerInterface $em): Response
     {
         /**
@@ -47,6 +51,9 @@ class CommentsController extends AbstractController
             ]
         );
     }
+    /**
+     * @return JsonResponse
+     */
     #[Route('/comments/{id}', name: 'comment', methods: 'GET')]
     public function comment(Comment $comment): Response
     {
@@ -65,6 +72,9 @@ class CommentsController extends AbstractController
             ]
         );
     }
+    /**
+     * @return JsonResponse
+     */
     #[Route('/posts/{id}/comments', name: 'getPostComments', methods: 'GET')]
     public function getPostComments(int $id, Request $request, CommentRepository $commentsRepo): Response
     {
@@ -92,6 +102,9 @@ class CommentsController extends AbstractController
                 'groups'=> ["comment_info"]]
         );
     }
+    /**
+     * @return JsonResponse
+     */
     #[Route('/comments', name: 'createComment', methods: 'POST')]
     #[IsGranted("ROLE_USER")]
     public function createComment(Request $request): Response
@@ -124,6 +137,9 @@ class CommentsController extends AbstractController
             403,
         );
     }
+    /**
+     * @return JsonResponse
+     */
     #[Route('/comments/{id}', name: 'publishComment', methods: 'PATCH')]
     #[IsGranted("ROLE_ADMIN")]
     public function publishComment(Comment $comment, Request $request): Response
@@ -147,6 +163,9 @@ class CommentsController extends AbstractController
             403,
         );
     }
+    /**
+     * @return JsonResponse
+     */
     #[Route('/comments/{id}', name: 'deleteComment', methods: 'DELETE')]
     #[IsGranted("ROLE_ADMIN")]
     public function deleteComment(Comment $comment): Response
