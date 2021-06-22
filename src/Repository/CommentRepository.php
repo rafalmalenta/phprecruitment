@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -43,6 +45,21 @@ class CommentRepository extends ServiceEntityRepository
             ->setFirstResult(($page-1) * $limit)
             ->getQuery()
             ->getResult();
+    }
+    /**
+     * @return int Returns an array of BlogPost objects
+     */
+    public function commentsCount(): int
+    {
+        try {
+            return $this->createQueryBuilder('c')
+                ->select('COUNT(c) as count')
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException | NonUniqueResultException $e)
+        {
+
+        }
     }
     // /**
     //  * @return Comment[] Returns an array of Comment objects

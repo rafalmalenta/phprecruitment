@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\BlogPost;
 use App\Entity\Comment;
+use App\Repository\CommentRepository;
 use App\Services\RequestValidator;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,19 +17,26 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 class CommentsController extends AbstractController
 {
     #[Route('/comments', name: 'allComments', methods: 'GET')]
-    public function allComments(Request $request): Response
+    public function allComments(Request $request, EntityManagerInterface $em): Response
     {
+        /**
+         * @var $commentsRepo CommentRepository
+         */
         $page = $request->query->get("page") ?? 1;
         $limit = $request->query->get("limit") ?? 22;
-        $comments = $this->getDoctrine()->getRepository(Comment::class)->findAllPaginated($page, $limit);
+        $commentsRepo = $em->getRepository(Comment::class);
+        $comments = $commentsRepo->findAllPaginated($page, $limit);
+        $maxPages = ceil($commentsRepo->commentsCount()/$limit);
         $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
-//            dump("inner",$innerObject,"outer",$outerObject,"atrib", $attributeName,"format", $format ,"context", $context );
             return $innerObject instanceof \DateTime ? $innerObject->format('Y-m-d H:i') : '';
         };
 
 
         return $this->json(
-            ['comments' => $comments],
+            [
+                "meta"=>["page"=>$page, "limit"=>$limit, "total_pages"=>$maxPages],
+                'comments' => $comments,
+            ],
       200,
             [],
             [
@@ -57,7 +66,7 @@ class CommentsController extends AbstractController
         );
     }
     #[Route('/posts/{id}/comments', name: 'getPostComments', methods: 'GET')]
-    public function getPostComments(int $id, Request $request): Response
+    public function getPostComments(int $id, Request $request, CommentRepository $commentsRepo): Response
     {
         $dateCallback = function ($innerObject, $outerObject, string $attributeName, string $format = null, array $context = []) {
             return $innerObject instanceof \DateTime ? $innerObject->format('Y-m-d H:i') : '';
@@ -65,11 +74,13 @@ class CommentsController extends AbstractController
         $page = $request->query->get("page") ?? 1;
         $limit = $request->query->get("limit") ?? 22;
         $comments = $this->getDoctrine()->getRepository(Comment::class)->findAllPaginatedWithOwnerId($id,$page, $limit);
+        $maxPages = ceil($commentsRepo->commentsCount()/$limit);
         if(!$comments){
             return $this->json(['error' => "resource don't exist"],404);
         }
         return $this->json(
             [
+                "meta"=>["page"=>$page, "limit"=>$limit, "total_pages"=>$maxPages],
                 'comments' => $comments,
             ],
             200,

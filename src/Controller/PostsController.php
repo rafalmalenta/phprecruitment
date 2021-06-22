@@ -33,7 +33,7 @@ class PostsController extends AbstractController
         };
         return $this->json(
             [
-                "meta"=>["page"=>$page, "limit"=>$limit, "pages"=>$maxPages],
+                "meta"=>["page"=>$page, "limit"=>$limit, "total_pages"=>$maxPages],
                 "posts"=>$posts
             ],
             200,
