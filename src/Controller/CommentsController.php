@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\BlogPost;
 use App\Entity\Comment;
 use App\Repository\CommentRepository;
+use App\Services\PostsDirector;
 use App\Services\RequestValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -138,6 +139,25 @@ class CommentsController extends AbstractController
     /**
      * @return JsonResponse
      */
+    #[Route('/comments/{id}', name: 'editComment', methods: 'PUT')]
+    public function editComment(Comment $comment, Request $request, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('OWNS', $comment);
+        $requestValidator = new RequestValidator($request);
+        $requestValidator->setRequestPattern(["comment"]);
+        if($requestValidator->allValuesPassed()){
+            $values = $requestValidator->getValidValues();
+            $comment->setContent($values['comment']);
+            $em->flush();
+            return $this->json([
+                "message"=>"successfully edited"
+            ],
+            200);
+        }
+    }
+    /**
+     * @return JsonResponse
+     */
     #[Route('/comments/{id}', name: 'publishComment', methods: 'PATCH')]
     #[IsGranted("ROLE_ADMIN")]
     public function publishComment(Comment $comment, Request $request): Response
@@ -165,14 +185,17 @@ class CommentsController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/comments/{id}', name: 'deleteComment', methods: 'DELETE')]
-    #[IsGranted("ROLE_ADMIN")]
-    public function deleteComment(Comment $comment): Response
+    public function deleteComment(Comment $comment, EntityManagerInterface $em): Response
     {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($comment);
-        $em->flush();
+        if($this->isGranted("ROLE_ADMIN") or $this->isGranted("OWNS",$comment)) {
+            $em->remove($comment);
+            $em->flush();
+            return $this->json(
+                ['message' => "successfully deleted"],
+                200);
+        }
         return $this->json(
-            ['message'=>"successfully deleted"],
+            ['error' => "something wrong"],
             200);
     }
 }
