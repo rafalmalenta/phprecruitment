@@ -9,7 +9,7 @@ services:
     volumes:
     - ./src:/task/src
     - ./config:/task/config
-    - ./public:/task/public
+    - ./public_html:/task/public_html
     - ./vendor:/task/vendor
     - ./:/task/
     depends_on:

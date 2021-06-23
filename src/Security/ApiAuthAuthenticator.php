@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
+
 
 namespace App\Security;
 
-use Ahc\Jwt\JWT;
-use App\Entity\User;
+
 use App\Services\JWTService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

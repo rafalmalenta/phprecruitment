@@ -34,5 +34,9 @@ with composer
    creates new post and returns success message or error message.    
    1. /posts/{id} => required token of admin user, and body {"postId":id,"fullContent":"Content","shortContent":"Content"} updates post with given id 
       and returns success message or error message.
-   1. /comments => required token of any user, required body {"postId":id,"comment":"Content"}
+   1. /comments => required token of any user, required body {"postId":id,"comment":"Content"}, allows edit comment only if token belong to user witch
+   is author of that comment.
+3. PUT.
+   1. /posts/{id} =>required token of admin user allows edit post.
+   1./ 
     

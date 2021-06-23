@@ -27,8 +27,7 @@
         "symfony/security-bundle": "5.4.*",
         "symfony/serializer": "5.4.*",
         "symfony/stopwatch": "5.4.*",
-        "symfony/web-profiler-bundle": "5.4.*",
-        "symfony/yaml": "5.4.*",
+        "symfony/yaml": "5.4.*"
     },
     "config": {
         "optimize-autoloader": true,
@@ -52,6 +51,13 @@
         "symfony/polyfill-iconv": "*",
         "symfony/polyfill-php72": "*"
     },
+    "extra": {
+        "public-dir": "public_html",
+        "symfony": {
+            "allow-contrib": false,
+            "require": "5.4.*"
+        }
+    },
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
@@ -67,12 +73,7 @@
     "conflict": {
         "symfony/symfony": "*"
     },
-    "extra": {
-        "symfony": {
-            "allow-contrib": false,
-            "require": "5.4.*"
-        }
-    },
+
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4"
     }
