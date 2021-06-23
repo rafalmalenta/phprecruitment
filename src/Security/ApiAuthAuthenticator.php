@@ -29,7 +29,8 @@ class ApiAuthAuthenticator extends AbstractAuthenticator
     public function supports(Request $request): ?bool
     {
         return $request->headers->has('Authorization')
-            && str_starts_with($request->headers->get('Authorization'), 'Bearer ');
+            && str_starts_with($request->headers->get('Authorization'), 'Bearer ')
+            && !$request->isMethod('GET');
     }
 
     public function authenticate(Request $request): PassportInterface
