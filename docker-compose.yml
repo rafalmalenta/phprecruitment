@@ -12,6 +12,7 @@ services:
     - ./public_html:/task/public_html
     - ./vendor:/task/vendor
     - ./:/task/
+    - ./tests:/task/tests
     depends_on:
       - db
   db:

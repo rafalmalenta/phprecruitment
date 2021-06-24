@@ -34,9 +34,10 @@ with composer
    creates new post and returns success message or error message.    
    1. /posts/{id} => required token of admin user, and body {"postId":id,"fullContent":"Content","shortContent":"Content"} updates post with given id 
       and returns success message or error message.
-   1. /comments => required token of any user, required body {"postId":id,"comment":"Content"}, allows edit comment only if token belong to user witch
-   is author of that comment.
+   1. /comments => required token of any user, required body {"postId":id,"comment":"Content"}, create comment.   
 3. PUT.
    1. /posts/{id} =>required token of admin user allows edit post.
-   1./ 
-    
+   1. /comments/{id} => required token of given comment author, allows edit if request comes from author/
+4. PATCH
+   1. /posts/{id} => required admin token, fullContent or shortContent or both allows edit post.
+   1. /comments/{id} => required admin token

@@ -34,4 +34,8 @@ class JWTService
             return false;
         }
     }
+    public function addTime($seconds)
+    {
+        $this->JWT->setTestTimestamp(time()+$seconds);
+    }
 }
