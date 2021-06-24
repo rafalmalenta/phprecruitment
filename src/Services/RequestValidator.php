@@ -20,9 +20,10 @@ class RequestValidator
     {
         $this->json = $json;
     }
-    private function isRequestValidJson(): bool
+    public function isRequestValidJson(): bool
     {
         if(gettype(json_decode($this->json, true)) === 'array') {
+//            dump(json_decode($this->json, true));
             $this->requestContent = json_decode($this->json, true);
             return true;
         }
@@ -32,17 +33,19 @@ class RequestValidator
     {
         $this->bodyPattern = $bodyPattern;
 
-        if ($this->isRequestValidJson())
-            foreach ($bodyPattern as $value){
-                if(key_exists($value,$this->requestContent)) {
+        if ($this->isRequestValidJson()) {
+            foreach ($bodyPattern as $value) {
+                if (key_exists($value, $this->requestContent)) {
                     $this->validValues["$value"] = $this->requestContent["$value"];
                     unset($this->requestContent["$value"]);
                 }
             }
-        if(!$this->isRequestValidJson()){
+        }
+        else{
             $this->validValues = [];
         }
-        $this->whatsInRequestIsTooMuch = $this->requestContent;
+        $this->whatsInRequestIsTooMuch = $this->requestContent ;
+
     }
     public function allValuesPassed(): bool
     {
@@ -63,5 +66,9 @@ class RequestValidator
     public function getValidValues(): array
     {
         return $this->validValues;
+    }
+    public function getRequestContent(): ?array
+    {
+        return $this->requestContent;
     }
 }
