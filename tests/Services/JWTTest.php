@@ -5,7 +5,6 @@ namespace App\Tests\Services;
 
 
 use App\Services\JWTService;
-use DateTime;
 use PHPUnit\Framework\TestCase;
 
 class JWTTest extends testCase

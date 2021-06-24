@@ -1,38 +1,48 @@
 <?php
 
+
 namespace App\Services;
 
-use Symfony\Component\HttpFoundation\Request;
 
 class RequestValidator
 {
-    private Request $request;
+    private string $json;
 
     private array $validValues;
 
     private array $bodyPattern;
 
+    private array $requestContent;
+
     private array $whatsInRequestIsTooMuch;
 
-    public function __construct(Request $request)
+    public function __construct(string $json)
     {
-        $this->request = $request;
+        $this->json = $json;
     }
-    public function setRequestPattern(array $bodyPattern):void
+    private function isRequestValidJson(): bool
+    {
+        if(gettype(json_decode($this->json, true)) === 'array') {
+            $this->requestContent = json_decode($this->json, true);
+            return true;
+        }
+        return false;
+    }
+    public function setValidValuesArrayUsingPattern(array $bodyPattern):void
     {
         $this->bodyPattern = $bodyPattern;
-        $requestContent = json_decode($this->request->getContent(), true);
-        if(!$requestContent){
-            $this->validValues = [];
-        }
-        else
+
+        if ($this->isRequestValidJson())
             foreach ($bodyPattern as $value){
-                if(key_exists($value,$requestContent)) {
-                    $this->validValues["$value"] = $requestContent["$value"];
-                    unset($requestContent["$value"]);
+                if(key_exists($value,$this->requestContent)) {
+                    $this->validValues["$value"] = $this->requestContent["$value"];
+                    unset($this->requestContent["$value"]);
                 }
             }
-        $this->whatsInRequestIsTooMuch = $requestContent;
+        if(!$this->isRequestValidJson()){
+            $this->validValues = [];
+        }
+        $this->whatsInRequestIsTooMuch = $this->requestContent;
     }
     public function allValuesPassed(): bool
     {

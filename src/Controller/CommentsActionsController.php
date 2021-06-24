@@ -24,8 +24,8 @@ class CommentsActionsController extends AbstractController
     #[IsGranted("ROLE_USER")]
     public function createComment(Request $request): Response
     {
-        $requestValidator = new RequestValidator($request);
-        $requestValidator->setRequestPattern(["postId","comment"]);
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["postId","comment"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->getValidValues();
             $postId = $values["postId"];
@@ -59,8 +59,8 @@ class CommentsActionsController extends AbstractController
     public function editComment(Comment $comment, Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('OWNS', $comment);
-        $requestValidator = new RequestValidator($request);
-        $requestValidator->setRequestPattern(["comment"]);
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["comment"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->getValidValues();
             $comment->setContent($values['comment']);
@@ -70,6 +70,10 @@ class CommentsActionsController extends AbstractController
             ],
                 200);
         }
+        return $this->json([
+            "error"=>"something went wrong"
+        ],
+            403);
     }
     /**
      * @return JsonResponse
@@ -78,8 +82,8 @@ class CommentsActionsController extends AbstractController
     #[IsGranted("ROLE_ADMIN")]
     public function publishComment(Comment $comment, Request $request): Response
     {
-        $requestValidator = new RequestValidator($request);
-        $requestValidator->setRequestPattern(["publish"]);
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["publish"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->getValidValues();
             if($values["publish"] == true){

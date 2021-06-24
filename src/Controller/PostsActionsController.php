@@ -24,8 +24,8 @@ class PostsActionsController extends AbstractController
     #[IsGranted("ROLE_ADMIN")]
     public function addPost(Request $request, EntityManagerInterface $em): Response
     {
-        $requestValidator = new RequestValidator($request);
-        $requestValidator->setRequestPattern(["fullContent","shortContent"]);
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->getValidValues();
             $director = new PostsDirector(new BlogPost(),$em);
@@ -45,8 +45,8 @@ class PostsActionsController extends AbstractController
     #[IsGranted("ROLE_ADMIN")]
     public function editPostCompletely(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
     {
-        $requestValidator = new RequestValidator($request);
-        $requestValidator->setRequestPattern(["fullContent","shortContent"]);
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->getValidValues();
             $director = new PostsDirector($blogPost, $em);
@@ -66,8 +66,8 @@ class PostsActionsController extends AbstractController
     #[IsGranted("ROLE_ADMIN")]
     public function editPostPartially(BlogPost $blogPost, Request $request, EntityManagerInterface $em): Response
     {
-        $requestValidator = new RequestValidator($request);
-        $requestValidator->setRequestPattern(["fullContent","shortContent"]);
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["fullContent","shortContent"]);
         if($requestValidator->atLeastOneValuesPassed()){
             $values = $requestValidator->getValidValues();
             $director = new PostsDirector($blogPost, $em);
