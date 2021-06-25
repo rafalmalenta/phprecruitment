@@ -80,5 +80,16 @@ class PostsActionsController extends AbstractController
             'error' => 'Something is missing'
         ])->setStatusCode(401);
     }
+    #[Route('/posts/{id}', name: 'deletePost', methods: 'DELETE')]
+    #[IsGranted("ROLE_ADMIN")]
+    public function deleteComment(BlogPost $post, EntityManagerInterface $em): Response
+    {
+        $em->remove($post);
+        $em->flush();
+        return $this->json(
+            ['message' => "successfully deleted"],
+            200);
+    }
+
 
 }

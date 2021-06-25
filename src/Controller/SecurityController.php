@@ -24,8 +24,8 @@ class SecurityController extends AbstractController
         /**
          * @var $user User
          */
-        $requestValidator = new RequestValidator($request);
-        $requestValidator->setRequestPattern(["username","password"]);
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["username","password"]);
         if($requestValidator->allValuesPassed()){
             $body = $requestValidator->getValidValues();
             $username = $body['username'];
@@ -37,6 +37,39 @@ class SecurityController extends AbstractController
                     'token' => $token,
                 ]);
             }
+        }
+        return $this->json([
+            'error' => 'invalid credentials',
+        ])->setStatusCode(401);
+    }
+    #[Route('/register', name: 'register', methods: ['POST'])]
+    public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordEncoder): Response
+    {
+        /**
+         * @var $user User
+         */
+        $requestValidator = new RequestValidator($request->getContent());
+        $requestValidator->setValidValuesArrayUsingPattern(["username","password","password2"]);
+        if($requestValidator->allValuesPassed()){
+            $body = $requestValidator->getValidValues();
+            if($entityManager->getRepository(User::class)->findOneBy(['username'=>$body['username']]))
+                return $this->json([
+                    'error' => "name taken",
+                    401
+                ]);
+            if($body["password"] !== $body["password2"])
+                return $this->json([
+                    'error' => "passwords doesnt match",
+                    401
+                ]);
+            $user= new User();
+            $user->setUsername($body["username"])
+                ->setPassword($this->passwordEncoder->hashPassword($user, "1234"));
+            $entityManager->persist($user);
+            $entityManager->flush();
+            return $this->json([
+                'message' => 'successfully created account',
+            ])->setStatusCode(203);
         }
         return $this->json([
             'error' => 'invalid credentials',
