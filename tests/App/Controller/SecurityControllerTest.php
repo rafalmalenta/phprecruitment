@@ -29,5 +29,8 @@ class SecurityControllerTest extends WebTestCase
         $crawler = $this->testClient->request('POST', '/login',[],[],[],"{\"username\": \"admin\",\"password\": \"1234\"}");
 
         $this->assertResponseStatusCodeSame(200);
+
+        $crawler = $this->testClient->request('POST', '/login',[],[],[],"{\"username\": \"admin\",\"password\": \"12344\"}");
+        $this->assertResponseStatusCodeSame(401);
     }
 }
