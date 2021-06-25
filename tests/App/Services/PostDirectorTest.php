@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Tests\Services;
+namespace App\Tests\App\Services;
 
 
 use App\Entity\BlogPost;

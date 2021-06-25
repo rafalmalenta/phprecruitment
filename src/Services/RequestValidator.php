@@ -44,7 +44,7 @@ class RequestValidator
         else{
             $this->validValues = [];
         }
-        $this->whatsInRequestIsTooMuch = $this->requestContent ;
+        $this->whatsInRequestIsTooMuch = $this->requestContent ?? [] ;
 
     }
     public function allValuesPassed(): bool

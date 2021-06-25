@@ -1,13 +1,12 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\DataFixtures\ORM;
 
 use App\Entity\BlogPost;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Persistence\ObjectManager;
 
-class LoadPostFixtures extends AbstractFixture
+class PostFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
