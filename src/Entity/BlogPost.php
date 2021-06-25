@@ -25,13 +25,13 @@ class BlogPost
      * @Groups({"main","post_info"})
      * @ORM\Column(type="text")
      */
-    private string $fullContent;
+    private ?string $fullContent;
 
     /**
      * @Groups({"main","post_info"})
      * @ORM\Column(type="text")
      */
-    private string $shortContent;
+    private ?string $shortContent;
 
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="post", orphanRemoval=true)

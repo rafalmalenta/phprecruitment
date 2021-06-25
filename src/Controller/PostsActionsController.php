@@ -28,7 +28,8 @@ class PostsActionsController extends AbstractController
         $requestValidator->setValidValuesArrayUsingPattern(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->getValidValues();
-            $director = new PostsDirector(new BlogPost(),$em);
+            $director = new PostsDirector($em);
+            $director->setPost(new BlogPost());
             $director->setValuesFromArray($values);
             return $this->json([
                 'message' => 'Post added'
@@ -49,7 +50,8 @@ class PostsActionsController extends AbstractController
         $requestValidator->setValidValuesArrayUsingPattern(["fullContent","shortContent"]);
         if($requestValidator->allValuesPassed()){
             $values = $requestValidator->getValidValues();
-            $director = new PostsDirector($blogPost, $em);
+            $director = new PostsDirector($em);
+            $director->setPost($blogPost);
             $director->setValuesFromArray($values);
             return $this->json([
                 'message' => 'Post edited'
@@ -70,7 +72,8 @@ class PostsActionsController extends AbstractController
         $requestValidator->setValidValuesArrayUsingPattern(["fullContent","shortContent"]);
         if($requestValidator->atLeastOneValuesPassed()){
             $values = $requestValidator->getValidValues();
-            $director = new PostsDirector($blogPost, $em);
+            $director = new PostsDirector($em);
+            $director->setPost($blogPost);
             $director->setValuesFromArray($values);
             return $this->json([
                 'message' => 'Post edited'

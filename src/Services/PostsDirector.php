@@ -10,10 +10,13 @@ class PostsDirector
     private BlogPost $post;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(BlogPost $post, EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+    public function setPost(BlogPost $post)
     {
         $this->post = $post;
-        $this->entityManager = $entityManager;
     }
 
     public function setValuesFromArray(array $nameValArray): void

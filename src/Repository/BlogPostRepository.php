@@ -35,7 +35,7 @@ class BlogPostRepository extends ServiceEntityRepository
             ->getResult();
     }
     /**
-     * @return int Returns an array of BlogPost objects
+     * @return int
      */
     public function postsCount(): int
     {

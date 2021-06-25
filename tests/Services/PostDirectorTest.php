@@ -24,7 +24,8 @@ class PostDirectorTest extends TestCase
     public function testItExecutesCorrectlyForFullArray()
     {
         $testArray = ["fullContent"=>"test content1","shortContent"=>"test content2"];
-        $director = new PostsDirector($this->mockPost, $this->mockManager);
+        $director = new PostsDirector($this->mockManager);
+        $director->setPost($this->mockPost);
         $this->mockManager->expects($this->once())
             ->method('persist')
             ->with($this->isInstanceOf(BlogPost::class));
@@ -42,7 +43,8 @@ class PostDirectorTest extends TestCase
     public function testItExecutesCorrectlyForPartialArray()
     {
         $testArray = ["fullContent"=>"test content1"];
-        $director = new PostsDirector($this->mockPost, $this->mockManager);
+        $director = new PostsDirector($this->mockManager);
+        $director->setPost($this->mockPost);
         $this->mockManager->expects($this->once())
             ->method('persist')
             ->with($this->isInstanceOf(BlogPost::class));
