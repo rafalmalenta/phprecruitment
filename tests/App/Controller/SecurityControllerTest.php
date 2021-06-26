@@ -17,7 +17,7 @@ class SecurityControllerTest extends WebTestCase
     {
         $this->testClient = static::createClient();
         $container = self::$kernel->getContainer();
-        $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get( null,'doctrine');
+        $this->databaseTool = $container->get(DatabaseToolCollection::class)->get( null,'doctrine');
         $this->databaseTool->loadFixtures(
             [LoadUserFixtures::class]
         );
@@ -25,8 +25,8 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLogin()
     {
-
         $crawler = $this->testClient->request('POST', '/login',[],[],[],"{\"username\": \"admin\",\"password\": \"1234\"}");
+
         $this->assertResponseStatusCodeSame(200);
         $crawler = $this->testClient->request('POST', '/login',[],[],[],"{\"username\": \"admin\",\"password\": \"12344\"}");
         $this->assertResponseStatusCodeSame(401);

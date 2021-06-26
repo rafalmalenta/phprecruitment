@@ -22,6 +22,7 @@ class PostsViewController extends AbstractController
         /**
          * @var $postRepo BlogPostRepository
          */
+
         $page = $request->query->get("page") ?? 1;
         $limit = $request->query->get("limit") ?? 22;
         $em = $this->getDoctrine()->getManager();
