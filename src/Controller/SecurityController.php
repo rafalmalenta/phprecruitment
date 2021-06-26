@@ -54,25 +54,23 @@ class SecurityController extends AbstractController
             $body = $requestValidator->getValidValues();
             if($entityManager->getRepository(User::class)->findOneBy(['username'=>$body['username']]))
                 return $this->json([
-                    'error' => "name taken",
-                    401
-                ]);
+                    'error' => "name taken"
+                ])->setStatusCode(406);
             if($body["password"] !== $body["password2"])
                 return $this->json([
-                    'error' => "passwords doesnt match",
-                    401
-                ]);
+                    'error' => "passwords doesnt match"
+                ])->setStatusCode(406);
             $user= new User();
             $user->setUsername($body["username"])
-                ->setPassword($this->passwordEncoder->hashPassword($user, "1234"));
+                ->setPassword($passwordEncoder->hashPassword($user, "1234"));
             $entityManager->persist($user);
             $entityManager->flush();
             return $this->json([
                 'message' => 'successfully created account',
-            ])->setStatusCode(203);
+            ])->setStatusCode(201);
         }
         return $this->json([
-            'error' => 'invalid credentials',
-        ])->setStatusCode(401);
+            'error' => 'incomplete body',
+        ])->setStatusCode(406);
     }
 }
